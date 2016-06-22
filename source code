@@ -10,12 +10,12 @@ sbit div=P3^7;
 sbit wela=P2^7;
 sbit dula=P2^6;
 
-uchar code table[]={0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,0x07,0x7f,0x6f,0x73,0x38,0x3e,0x6d,0x7f,0x39,0x76,0x79,0x37,0x6f,0x77,0x00,0x40};
+uchar code table[]={0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,0x07,0x7f,0x6f,0x73,0x38,0x3e,0x6d,0x7f,0x39,0x76,0x79,0x37,0x6f,0x77,0x00,0x40,0xBF,0x86,0xdb,0xcf,0xe6,0xed,0xfd,0x87,0xff,0xef};
 uchar num;
 int r_sign=0;
 int sign[5];
 //count1=0,count2=0,equal=0;
-long a[4],b[4];
+long a[4],b[4],rest[5]={0};
 
 void delayms(int xms)
 {
@@ -32,7 +32,7 @@ temp=P3;
 temp=temp&0xf0;
     if(temp!=0xf0)
     {
-	delayms(10);                   //?ü?ì?o3?
+	delayms(10);                   //?¨¹?¨¬?o3?
     temp=P3;
     temp=temp&0xf0;
         if(temp!=0xf0)
@@ -85,7 +85,7 @@ temp=P3;
 temp=temp&0xf0;
     if(temp!=0xf0)
     {
-	delayms(10);                   //?ü?ì?o3?
+	delayms(10);                   //?¨¹?¨¬?o3?
     temp=P3;
     temp=temp&0xf0;
         if(temp!=0xf0)
@@ -136,7 +136,7 @@ temp=P3;
 temp=temp&0xf0;
     if(temp!=0xf0)
     {
-	 delayms(10);                   //?ü?ì?o3?
+	 delayms(10);                   //?¨¹?¨¬?o3?
     temp=P3;
     temp=temp&0xf0;
         if(temp!=0xf0)
@@ -188,7 +188,7 @@ temp=P3;
 temp=temp&0xf0;
     if(temp!=0xf0)
     {
-	 delayms(10);                   //?ü?ì?o3?
+	 delayms(10);                   //?¨¹?¨¬?o3?
     temp=P3;
     temp=temp&0xf0;
         if(temp!=0xf0)
@@ -235,12 +235,11 @@ temp=temp&0xf0;
     }
 }
 
-
 long Calculator()
 {
 
 long res,cal1,cal2;
-
+int x=0,i;
 if(sign[1]==1)
 cal1=a[0];
 else if(sign[1]==2)
@@ -267,83 +266,66 @@ if(sign[0]==3)
 res=cal1*cal2;
 
 if(sign[0]==4)
-res=cal1/cal2;
+{
+	res=cal1/cal2;
+    if(cal1==res*cal2)
+	{   
+		return res;
+	}
+    res=0;
+    while(x<4)
+	{
+	  while(cal1>cal2)
+	  {
+	  cal1=cal1-cal2;
+	  rest[x]++;
+	  }
+	  if(cal1==cal2)
+	  {
+	  rest[x]++;
+      for (i=0;i<x+1;i++)
+         res=res*10+rest[i];
+      rest[4]=x;
+      return res;
+	  }
+	  cal1=cal1*10;
+	  x++;
+	}
+    rest[4]=x-1;
+	res=rest[0]*1000+rest[1]*100+rest[2]*10+rest[3];
+}
 
 return res;
 
 }
 
-void Display(int v1,int v2,int v3,int v4,int v5,int v6)
+void Dis(int a,int b)
 {
       P0=0x00;      
 
       dula=1;
-	  P0=table[v1];
+	  P0=a;
 	  dula=0;
 	  P0=0xff;
 	  wela=1;
-	  P0=0xfe;
+	  P0=b;
 	  wela=0;
       delayms(1);
+}
 
-	  P0=0x00;
+void Display(int v1,int v2,int v3,int v4,int v5,int v6)
+{
+      Dis(table[v1],0xfe);
+      Dis(table[v2],0xfd);
+      Dis(table[v3],0xfb);
+      Dis(table[v4],0xf7);
+      Dis(table[v5],0xef);
+      Dis(table[v6],0xdf);
 
-	  dula=1;
-	  P0=table[v2];
-	  dula=0;
-	  P0=0xff;
-	  wela=1;
-	  P0=0xfd;
-	  wela=0;
-      delayms(1);
-
-
-	  P0=0x00;
-
-	  dula=1;
-	  P0=table[v3];
-	  dula=0;
-	  P0=0xff;
-	  wela=1;
-	  P0=0xfb;
-	  wela=0;
-      delayms(1);
-
-	  P0=0x00;
-
-	  dula=1;
-	  P0=table[v4];
-	  dula=0;
-	  P0=0xff;
-	  wela=1;
-	  P0=0xf7;
-	  wela=0;
-      delayms(1);
-
-	  P0=0x00;
-
-	  dula=1;
-	  P0=table[v5];
-	  dula=0;
-	  P0=0xff;
-	  wela=1;
-	  P0=0xef;
-	  wela=0;
-      delayms(1);
-
-	  P0=0x00;
-
-	  dula=1;
-	  P0=table[v6];
-	  dula=0;
-	  P0=0xff;
-	  wela=1;
-	  P0=0xdf;
-	  wela=0;
-      delayms(1);
 	  
 	  P0=0x00;
 }
+
 
 void CharDisplay()
 { 
@@ -410,7 +392,8 @@ void T0_time() interrupt 1
 
 void main()
 {  long res,c[6];
-	//计时器初始化：?
+   int  x=0;
+	//¼ÆÊ±Æ÷³õÊ¼»¯£º£
 	TMOD=0x01;
 	TH0=(65536-45872)/256;
 	TL0=(65536-45872)%256;
@@ -503,6 +486,8 @@ void main()
 	{ 	 	 	 	 	 	 	 	 	 	 	 	 	 
     res=Calculator();
 
+
+
 	if(res<0)
 	{
 	sign[4]=1;
@@ -514,9 +499,21 @@ void main()
 	c[2]=(res-c[0]*100000-c[1]*10000)/1000;
 	c[3]=(res-c[0]*100000-c[1]*10000-c[2]*1000)/100;
 	c[4]=(res-c[0]*100000-c[1]*10000-c[2]*1000-c[3]*100)/10;
-	c[5]=res-c[0]*100000-c[1]*10000-c[2]*1000-c[3]*100-c[4]*10;   
+	c[5]=res-c[0]*100000-c[1]*10000-c[2]*1000-c[3]*100-c[4]*10; 
+  
+	
+	for(k=0;k<4;k++)
+	if(rest[k]!=0)
+     x++;
 
-
+	 if (x!=0)
+    {
+    x=rest[4];
+    x=5-x;
+    c[x]=c[x]+23;
+    }
+	
+   
     for(k=0;k<6;k++)
 	{
 	if(c[k]!=0)
@@ -536,7 +533,12 @@ void main()
 	Display(c[0],c[1],c[2],c[3],c[4],c[5]);
   for(k=0;k<3;k++)
 	Display(21,21,21,21,21,21);
+	 for(k=0;k<5;k++)
+       rest[k]=0;
+   x=0;
    }
    }
+  
 }
+
 
